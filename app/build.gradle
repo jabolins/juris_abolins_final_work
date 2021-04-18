@@ -15,6 +15,9 @@ repositories {
     // Use JCenter for resolving dependencies.
     jcenter()
 }
+// lai atpazīst viss burtus
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
 
 dependencies {
     // Use JUnit test framework.
@@ -22,9 +25,12 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:29.0-jre'
+
+    //mockito
+    testImplementation 'org.mockito:mockito-core:3.9.0'
 }
 
 application {
     // Define the main class for the application.
-    mainClass = 'lv.lu.finalwork.App'
+    mainClass = 'lv.lu.finalwork.ProductAccountingApplication'
 }
