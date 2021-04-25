@@ -3,10 +3,12 @@ package lv.lu.finalwork.service;
 import lv.lu.finalwork.model.repository.Product;
 import lv.lu.finalwork.model.ui.ProductInputData;
 import lv.lu.finalwork.repository.ProductRepository;
+import lv.lu.finalwork.validation.ProductValidator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -26,7 +28,8 @@ public class ProductServiceTest {
     private ProductRepository repository;
     @Mock
     private ProductMapper mapper;
-
+    @Mock
+    private ProductValidator validator;
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -38,19 +41,21 @@ public class ProductServiceTest {
         // ar jebkādiem paramentriem, šī metode vienmēr atgriezīs product
         service.save(inputData);
 
-        Mockito.verify(repository).save(Mockito.any()); // verify pārbauda vai tika izsaukta metode. Šo jāpamācās vairāk
-        // parametrs any norāda ka viņam ir vienalga kas tur padots. Galvenais ka tur kaut kas bija (tai skaitā null)
+        InOrder inOrder = Mockito.inOrder(mapper,repository,validator); // šis objekts var pārbaudīt kārtību kādā tika izsauktas metodes
+//        Mockito.verify(repository).save(Mockito.any()); // verify pārbauda vai tika izsaukta metode. Šo jāpamācās vairāk
+//        // parametrs any norāda ka viņam ir vienalga kas tur padots. Galvenais ka tur kaut kas bija (tai skaitā null)
+//
+//        Mockito.verify(repository).save(Mockito.any(Product.class)); // šajā gadījumā pārliecinās
+//        // ka saglabās kaut kādu Product.class (nevis null)
 
-        Mockito.verify(repository).save(Mockito.any(Product.class)); // šajā gadījumā pārliecinās
-        // ka saglabās kaut kādu Product.class (nevis null)
-
-        Mockito.verify(repository).save(product); // šajā gadījumā pārliecinās
+        inOrder.verify(validator).validate(inputData);// pārbauda vai bija izsaukums validator.validatate(inputData)
+        inOrder.verify(mapper).mapFrom(inputData);
+        inOrder.verify(repository).save(product); // šajā gadījumā pārliecinās
         // ka saglabās konkrēto product
 
-        verify(mapper).mapFrom(inputData);
 
-        verifyNoMoreInteractions(mapper, repository);// pārbauda ka pēc iepriekšējo darbību veikšanas
-// ar mappar vai repository vairs netiek veiktas nekādas darbības
+        verifyNoMoreInteractions(mapper, repository, validator);// pārbauda ka pēc iepriekšējo darbību veikšanas
+// ar mappar vai repository, vai validator vairs netiek veiktas nekādas darbības
     }
 
     @Test
