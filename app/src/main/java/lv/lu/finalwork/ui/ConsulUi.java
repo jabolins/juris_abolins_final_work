@@ -4,30 +4,36 @@ package lv.lu.finalwork.ui;
 import lv.lu.finalwork.model.ui.ProductInputData;
 import lv.lu.finalwork.model.repository.ProductCategory;
 import lv.lu.finalwork.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Scanner;
 
+@Component
 public class ConsulUi {
 
-    private ProductService service;
-    private final Scanner scanner = new Scanner(System.in);
 
-    public ConsulUi() {
-        this.service = new ProductService();
+    private final  ProductService service; // labāk pielikt final lai reference nemainās
+    private final Scanner scanner;
+
+    @Autowired
+    public ConsulUi(ProductService service, Scanner scanner) { //labāk veidot ar konstruktoru
+        this.service = service;
+        this.scanner = scanner;
     }
 
     public void startUi() {
 
         int userChoice;
-        while (true){
+        while (true) {
 
             printMenu();
             userChoice = scanner.nextInt();
 
-             callServiceByChoice(userChoice);
+            callServiceByChoice(userChoice);
 
-            if(userChoice==0){
+            if (userChoice == 0) {
                 break;
             }
         }
@@ -50,7 +56,7 @@ public class ConsulUi {
     }
 
     private void initProductSave() {
-       ProductInputData productInputData = new ProductInputData();
+        ProductInputData productInputData = new ProductInputData();
 
         System.out.println("Enter product name..");
         productInputData.setName(scanner.next());
